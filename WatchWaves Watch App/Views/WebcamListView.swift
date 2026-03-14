@@ -104,6 +104,11 @@ struct WebcamSnapshotView: View {
     @State private var lastFetched: Date?
     // Loading state
     @State private var resolving = false
+    // Zoom state (snapshot only)
+    @State private var scale: CGFloat = 1.0
+    @State private var lastScale: CGFloat = 1.0
+    @State private var offset: CGSize = .zero
+    @State private var lastOffset: CGSize = .zero
 
     var body: some View {
         ZStack {
@@ -112,13 +117,43 @@ struct WebcamSnapshotView: View {
             if let player {
                 VideoPlayer(player: player)
                     .ignoresSafeArea()
-                    .disabled(true)          // prevent tap-to-pause interfering
+                    .disabled(true)
             } else if let image {
                 image
                     .resizable()
                     .scaledToFill()
+                    .scaleEffect(scale)
+                    .offset(offset)
                     .clipped()
                     .ignoresSafeArea()
+                    .gesture(
+                        MagnificationGesture()
+                            .onChanged { value in
+                                scale = max(1, lastScale * value)
+                            }
+                            .onEnded { _ in
+                                lastScale = scale
+                            }
+                            .simultaneously(with:
+                                DragGesture()
+                                    .onChanged { value in
+                                        guard scale > 1 else { return }
+                                        offset = CGSize(
+                                            width: lastOffset.width + value.translation.width,
+                                            height: lastOffset.height + value.translation.height
+                                        )
+                                    }
+                                    .onEnded { _ in
+                                        lastOffset = offset
+                                    }
+                            )
+                    )
+                    .onTapGesture(count: 2) {
+                        withAnimation(.spring(duration: 0.3)) {
+                            scale = 1; lastScale = 1
+                            offset = .zero; lastOffset = .zero
+                        }
+                    }
             } else {
                 VStack(spacing: 6) {
                     if resolving {
@@ -137,8 +172,8 @@ struct WebcamSnapshotView: View {
 
             // Overlays
             VStack {
-                if player != nil {
-                    HStack {
+                HStack {
+                    if player != nil {
                         HStack(spacing: 3) {
                             Circle()
                                 .fill(.red)
@@ -150,13 +185,23 @@ struct WebcamSnapshotView: View {
                         .padding(.horizontal, 6)
                         .padding(.vertical, 3)
                         .background(.black.opacity(0.55), in: Capsule())
-                        .padding(.top, 6)
-                        .padding(.leading, 6)
-                        Spacer()
                     }
+                    Spacer()
+                    // Close button — replaces tap-to-dismiss so it doesn't conflict with zoom
+                    Button { dismiss() } label: {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundStyle(.white)
+                            .padding(8)
+                            .background(.black.opacity(0.55), in: Circle())
+                    }
+                    .buttonStyle(.plain)
                 }
+                .padding(.top, 6)
+                .padding(.horizontal, 6)
+
                 Spacer()
-                // Name label — shown over snapshot only (VideoPlayer has its own chrome)
+                // Name label — shown over snapshot only
                 if player == nil {
                     VStack(spacing: 2) {
                         Text(entry.name)
@@ -168,6 +213,11 @@ struct WebcamSnapshotView: View {
                                 .font(.system(size: 9))
                                 .foregroundStyle(.white.opacity(0.6))
                         }
+                        if scale > 1 {
+                            Text("Double-tap to reset")
+                                .font(.system(size: 8))
+                                .foregroundStyle(.white.opacity(0.4))
+                        }
                     }
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
@@ -177,7 +227,6 @@ struct WebcamSnapshotView: View {
             }
         }
         .navigationBarHidden(true)
-        .onTapGesture { dismiss() }
         .task { await start() }
         .onDisappear { player?.pause() }
     }
