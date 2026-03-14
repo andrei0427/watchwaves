@@ -348,6 +348,7 @@
 					};
 					FF0010000000000000000001 = {
 						CreatedOnToolsVersion = 15.0;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
