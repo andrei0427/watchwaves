@@ -1,6 +1,9 @@
 import SwiftUI
 
+enum ConditionsMode { case compass, conditions }
+
 struct CurrentConditionsView: View {
+    let mode: ConditionsMode
     let condition: WaveCondition
     let useMetric: Bool
     let coastDirection: CompassDirection?
@@ -9,8 +12,8 @@ struct CurrentConditionsView: View {
     var beachName: String?
     var coastBearing: Double?
     var coastDistanceKm: Double?
+    var onTap: () -> Void = {}
 
-    @State private var showCompass = true
     @State private var smoothRotation: Double = 0
 
     private var gradientIntensity: Double {
@@ -145,17 +148,16 @@ struct CurrentConditionsView: View {
                         .foregroundStyle(.white.opacity(0.3))
                 }
             }
-            .opacity(showCompass ? 0 : 1)
-            .allowsHitTesting(!showCompass)
+            .opacity(mode == .compass ? 0 : 1)
+            .allowsHitTesting(mode == .conditions)
 
             // Compass overlay
-            if showCompass {
+            if mode == .compass {
                 compassOverlay
-                    .transition(.opacity)
             }
         }
         .simultaneousGesture(
-            TapGesture().onEnded { withAnimation(.easeOut(duration: 0.25)) { showCompass.toggle() } }
+            TapGesture().onEnded { onTap() }
         )
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background {
@@ -434,6 +436,7 @@ struct ShoreIndicator: Shape {
 
 #Preview {
     CurrentConditionsView(
+        mode: .compass,
         condition: .placeholder,
         useMetric: true,
         coastDirection: .west,

@@ -42,6 +42,8 @@
 		AA0035000000000000000001 /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0009000000000000000001 /* DataStore.swift */; };
 		AA0040000000000000000001 /* WatchWavesWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = CC0002000000000000000001 /* WatchWavesWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		AA0050000000000000000001 /* WaveMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0050000000000000000001 /* WaveMapView.swift */; };
+		AA0051000000000000000001 /* WebcamEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0051000000000000000001 /* WebcamEntry.swift */; };
+		AA0052000000000000000001 /* WebcamListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0052000000000000000001 /* WebcamListView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -100,6 +102,8 @@
 		BB0026000000000000000001 /* InlineComplicationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineComplicationView.swift; sourceTree = "<group>"; };
 		BB0027000000000000000001 /* WatchWavesWidgets.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WatchWavesWidgets.entitlements; sourceTree = "<group>"; };
 		BB0050000000000000000001 /* WaveMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveMapView.swift; sourceTree = "<group>"; };
+		BB0051000000000000000001 /* WebcamEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebcamEntry.swift; sourceTree = "<group>"; };
+		BB0052000000000000000001 /* WebcamListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebcamListView.swift; sourceTree = "<group>"; };
 		CC0001000000000000000001 /* WatchWaves Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WatchWaves Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC0002000000000000000001 /* WatchWavesWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WatchWavesWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -153,6 +157,7 @@
 				BB0003000000000000000001 /* WaveCondition.swift */,
 				BB0004000000000000000001 /* CoastProbeResult.swift */,
 				BB0005000000000000000001 /* UserPreferences.swift */,
+				BB0051000000000000000001 /* WebcamEntry.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -179,6 +184,7 @@
 				BB000F000000000000000001 /* CoastSelectorView.swift */,
 				BB0010000000000000000001 /* DirectionIndicatorView.swift */,
 				BB0050000000000000000001 /* WaveMapView.swift */,
+				BB0052000000000000000001 /* WebcamListView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -333,6 +339,8 @@
 				AA000F000000000000000001 /* CoastSelectorView.swift in Sources */,
 				AA0010000000000000000001 /* DirectionIndicatorView.swift in Sources */,
 				AA0050000000000000000001 /* WaveMapView.swift in Sources */,
+				AA0051000000000000000001 /* WebcamEntry.swift in Sources */,
+				AA0052000000000000000001 /* WebcamListView.swift in Sources */,
 				AA0011000000000000000001 /* GeoHelpers.swift in Sources */,
 				AA0012000000000000000001 /* CompassDirection.swift in Sources */,
 				AA0013000000000000000001 /* WaveFormatter.swift in Sources */,

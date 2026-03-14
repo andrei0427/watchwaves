@@ -2,32 +2,19 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var viewModel = WaveViewModel()
-    @State private var selectedTab = 1
+    @State private var showForecast = false
+    @State private var showMap = false
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         NavigationStack {
-            TabView(selection: $selectedTab) {
-                if let detection = viewModel.coastDetection {
-                    WaveMapView(
-                        detection: detection,
-                        condition: viewModel.currentCondition,
-                        selectedCoast: viewModel.selectedCoast
-                    )
+            TabView {
+                conditionsTab
                     .tag(0)
-                }
-
-                mainPage
+                compassTab
                     .tag(1)
-
-                if !viewModel.forecast.isEmpty {
-                    ForecastView(
-                        forecast: viewModel.forecast,
-                        useMetric: viewModel.preferences.useMetricUnits,
-                        lastUpdated: DataStore.shared.lastUpdateTime,
-                        onRefresh: { await viewModel.loadData() }
-                    )
+                WebcamListView()
                     .tag(2)
-                }
             }
             .tabViewStyle(.verticalPage)
         }
@@ -36,14 +23,22 @@ struct ContentView: View {
             await viewModel.loadData()
             NSLog("[WatchWaves] ContentView .task completed")
         }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                Task { await viewModel.loadData() }
+            }
+        }
         .onAppear { viewModel.locationService.startHeadingUpdates() }
         .onDisappear { viewModel.locationService.stopHeadingUpdates() }
     }
 
+    // MARK: - Tab 1: Conditions → forecast sheet on tap
+
     @ViewBuilder
-    private var mainPage: some View {
+    private var conditionsTab: some View {
         if let condition = viewModel.currentCondition {
             CurrentConditionsView(
+                mode: .conditions,
                 condition: condition,
                 useMetric: viewModel.preferences.useMetricUnits,
                 coastDirection: viewModel.selectedCoast?.direction,
@@ -51,8 +46,17 @@ struct ContentView: View {
                 lastUpdated: DataStore.shared.lastUpdateTime,
                 beachName: viewModel.nearestBeachName,
                 coastBearing: viewModel.coastBearing,
-                coastDistanceKm: viewModel.coastDistanceKm
+                coastDistanceKm: viewModel.coastDistanceKm,
+                onTap: { showForecast = true }
             )
+            .sheet(isPresented: $showForecast) {
+                ForecastView(
+                    forecast: viewModel.forecast,
+                    useMetric: viewModel.preferences.useMetricUnits,
+                    lastUpdated: DataStore.shared.lastUpdateTime,
+                    onRefresh: { await viewModel.loadData() }
+                )
+            }
         } else if viewModel.isLoading {
             VStack(spacing: 8) {
                 ProgressView()
@@ -84,6 +88,46 @@ struct ContentView: View {
                 }
                 .buttonStyle(.borderedProminent)
             }
+        }
+    }
+
+    // MARK: - Tab 2: Compass → map sheet on tap
+
+    @ViewBuilder
+    private var compassTab: some View {
+        if let condition = viewModel.currentCondition {
+            CurrentConditionsView(
+                mode: .compass,
+                condition: condition,
+                useMetric: viewModel.preferences.useMetricUnits,
+                coastDirection: viewModel.selectedCoast?.direction,
+                heading: viewModel.locationService.heading,
+                lastUpdated: DataStore.shared.lastUpdateTime,
+                beachName: viewModel.nearestBeachName,
+                coastBearing: viewModel.coastBearing,
+                coastDistanceKm: viewModel.coastDistanceKm,
+                onTap: { showMap = true }
+            )
+            .sheet(isPresented: $showMap) {
+                if let detection = viewModel.coastDetection {
+                    WaveMapView(
+                        detection: detection,
+                        condition: condition,
+                        selectedCoast: viewModel.selectedCoast
+                    )
+                }
+            }
+        } else if viewModel.isLoading {
+            VStack(spacing: 8) {
+                ProgressView()
+                Image(systemName: "location.circle")
+                    .font(.title2)
+                    .foregroundStyle(.cyan.opacity(0.4))
+            }
+        } else {
+            Image(systemName: "location.slash")
+                .font(.title2)
+                .foregroundStyle(.secondary)
         }
     }
 }

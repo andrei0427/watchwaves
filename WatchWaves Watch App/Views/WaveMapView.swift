@@ -10,6 +10,7 @@ struct WaveMapView: View {
     private let maxRadiusKm: Double
     private let waveParticleCount = 120
     private let windParticleCount = 80
+    @State private var selectedPin: WebcamPin?
 
     init(detection: CoastDetectionResult, condition: WaveCondition?, selectedCoast: CoastProbeResult?) {
         self.detection = detection
@@ -34,13 +35,30 @@ struct WaveMapView: View {
 
     var body: some View {
         ZStack {
-            // Satellite map
-            Map(initialPosition: .region(mapRegion), interactionModes: [])
-                .mapStyle(.imagery)
+            // Satellite map with webcam pins
+            Map(initialPosition: .region(mapRegion), interactionModes: [.pan, .zoom]) {
+                ForEach(WebcamPin.all) { pin in
+                    Annotation("", coordinate: pin.coordinate, anchor: .bottom) {
+                        WebcamPinMarker(pin: pin) { selectedPin = pin }
+                    }
+                }
+                // User location — moves with the map
+                Annotation("", coordinate: detection.probeOrigin, anchor: .center) {
+                    UserLocationPin()
+                }
+                // Detected shore point — moves with the map
+                if let coast = selectedCoast {
+                    Annotation("", coordinate: coast.bestCoordinate, anchor: .center) {
+                        ShorePointPin()
+                    }
+                }
+            }
+            .mapStyle(.imagery)
 
             // Dark overlay to mute map detail — lets particles pop
             Color.black.opacity(0.55)
                 .ignoresSafeArea()
+                .allowsHitTesting(false)
 
             // Particle overlay — fills entire screen
             GeometryReader { geo in
@@ -50,7 +68,6 @@ struct WaveMapView: View {
                     Canvas { context, canvasSize in
                         let center = CGPoint(x: canvasSize.width / 2, y: canvasSize.height / 2)
                         let time = timeline.date.timeIntervalSinceReferenceDate
-                        let landPath = buildLandPath(center: center, radarRadius: radarRadius)
                         // Pixels per km for ocean check at full canvas scale
                         let pxPerKm = min(canvasSize.width, canvasSize.height) / 2 / maxRadiusKm
 
@@ -75,30 +92,12 @@ struct WaveMapView: View {
                             )
                         }
 
-                        // Selected coast marker
-                        if let selected = selectedCoast {
-                            drawSelectedDirection(
-                                context: context, center: center,
-                                radarRadius: radarRadius, direction: selected.direction
-                            )
-                        }
-
-                        // You are here
-                        let dotSize: CGFloat = 6
-                        let dotRect = CGRect(
-                            x: center.x - dotSize / 2,
-                            y: center.y - dotSize / 2,
-                            width: dotSize, height: dotSize
-                        )
-                        context.fill(Path(ellipseIn: dotRect), with: .color(.white))
-                        let ringRect = dotRect.insetBy(dx: -1.5, dy: -1.5)
-                        context.stroke(Path(ellipseIn: ringRect), with: .color(.white.opacity(0.5)), lineWidth: 1)
-
                         // Compass labels
                         drawCompassLabels(context: context, center: center, radarRadius: radarRadius)
                     }
                 }
                 .ignoresSafeArea()
+                .allowsHitTesting(false)
             }
 
             // Bottom info bar
@@ -108,6 +107,9 @@ struct WaveMapView: View {
                     bottomBar(condition: condition)
                 }
             }
+        }
+        .sheet(item: $selectedPin) { pin in
+            WebcamPinSheet(pin: pin)
         }
     }
 
@@ -378,31 +380,6 @@ struct WaveMapView: View {
         }
     }
 
-    // MARK: - Selected Direction
-
-    private func drawSelectedDirection(
-        context: GraphicsContext, center: CGPoint,
-        radarRadius: Double, direction: CompassDirection
-    ) {
-        let rad = (direction.bearing - 90) * .pi / 180
-        let dist = coastByDirection[direction]?.distanceKm ?? maxRadiusKm
-        let r = (dist / maxRadiusKm) * radarRadius
-
-        let x = center.x + cos(rad) * r
-        let y = center.y + sin(rad) * r
-        let markerSize: CGFloat = 4
-        let markerRect = CGRect(
-            x: x - markerSize, y: y - markerSize,
-            width: markerSize * 2, height: markerSize * 2
-        )
-        context.fill(Path(ellipseIn: markerRect), with: .color(.cyan))
-
-        var line = Path()
-        line.move(to: center)
-        line.addLine(to: CGPoint(x: x, y: y))
-        context.stroke(line, with: .color(.cyan.opacity(0.3)), lineWidth: 0.5)
-    }
-
     // MARK: - Compass Labels
 
     private func drawCompassLabels(context: GraphicsContext, center: CGPoint, radarRadius: Double) {
@@ -438,6 +415,90 @@ struct WaveMapView: View {
                 .font(.system(size: 12, weight: .heavy))
                 .foregroundStyle(.white)
             context.draw(context.resolve(text), at: pt)
+        }
+    }
+}
+
+// MARK: - Location annotation views
+
+private struct UserLocationPin: View {
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(.white.opacity(0.25))
+                .frame(width: 14, height: 14)
+            Circle()
+                .fill(.white)
+                .frame(width: 7, height: 7)
+        }
+    }
+}
+
+private struct ShorePointPin: View {
+    var body: some View {
+        ZStack {
+            Rectangle()
+                .fill(.orange)
+                .frame(width: 11, height: 1.5)
+            Rectangle()
+                .fill(.orange)
+                .frame(width: 1.5, height: 11)
+            Circle()
+                .fill(.orange)
+                .frame(width: 3, height: 3)
+        }
+    }
+}
+
+// MARK: - Webcam pin marker (shown on the map)
+
+private struct WebcamPinMarker: View {
+    let pin: WebcamPin
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            ZStack(alignment: .topTrailing) {
+                Image(systemName: "video.fill")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(.black)
+                    .padding(5)
+                    .background(.cyan, in: Circle())
+
+                if pin.cameras.count > 1 {
+                    Text("\(pin.cameras.count)")
+                        .font(.system(size: 7, weight: .heavy))
+                        .foregroundStyle(.black)
+                        .frame(width: 12, height: 12)
+                        .background(.white, in: Circle())
+                        .offset(x: 5, y: -5)
+                }
+            }
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Sheet shown when a pin is tapped
+
+private struct WebcamPinSheet: View {
+    let pin: WebcamPin
+
+    var body: some View {
+        NavigationStack {
+            if pin.cameras.count == 1, let entry = pin.cameras.first {
+                WebcamSnapshotView(entry: entry)
+            } else {
+                List(pin.cameras) { entry in
+                    NavigationLink(entry.name) {
+                        WebcamSnapshotView(entry: entry)
+                    }
+                    .font(.system(size: 14, weight: .medium))
+                }
+                .navigationTitle(pin.cameras.first.map { _ in
+                    pin.cameras[0].name.components(separatedBy: " ").first ?? "Cameras"
+                } ?? "Cameras")
+            }
         }
     }
 }

@@ -15,7 +15,17 @@ final class DataStore {
     }
 
     init() {
-        self.defaults = UserDefaults(suiteName: "group.com.watchWaves.shared") ?? .standard
+        // Test if the shared container actually works before using it
+        if let shared = UserDefaults(suiteName: "group.com.watchWaves.shared") {
+            let testKey = "__containerTest"
+            shared.set(true, forKey: testKey)
+            if shared.bool(forKey: testKey) {
+                shared.removeObject(forKey: testKey)
+                self.defaults = shared
+                return
+            }
+        }
+        self.defaults = .standard
     }
 
     // MARK: - Coast Detection
