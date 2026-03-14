@@ -1,7 +1,9 @@
 import SwiftUI
 import AVKit
 import AVFoundation
+#if os(watchOS)
 import WatchKit
+#endif
 
 // MARK: - Section model
 

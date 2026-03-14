@@ -74,7 +74,9 @@ final class WaveViewModel {
 
         isLoading = false
         isLoadingInProgress = false
+        #if os(watchOS)
         BackgroundRefreshManager.shared.scheduleNextRefresh()
+        #endif
     }
 
     private nonisolated func shouldReprobe(from coordinate: CLLocationCoordinate2D) -> Bool {
