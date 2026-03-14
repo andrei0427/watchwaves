@@ -203,14 +203,16 @@ struct CurrentConditionsView: View {
         GeometryReader { geo in
             let size = min(geo.size.width, geo.size.height)
             let ringRadius = size / 2 - 20
-            let labelRadius = ringRadius + 10
+            // Scale factor relative to a reference watchOS ring of ~62pt
+            let s = max(1.0, ringRadius / 62)
+            let labelRadius = ringRadius + 12 * s
 
             ZStack {
                 // Rotating compass ring + arrows
                 ZStack {
                     // Ring
                     Circle()
-                        .stroke(.white.opacity(0.2), lineWidth: 2)
+                        .stroke(.white.opacity(0.2), lineWidth: 2 * s)
                         .frame(width: ringRadius * 2, height: ringRadius * 2)
 
                     // Cardinal labels — counter-rotated to stay upright
@@ -218,7 +220,7 @@ struct CurrentConditionsView: View {
                         let angle = Double(idx) * 90.0
                         let rad = (angle - 90) * .pi / 180
                         Text(label)
-                            .font(.system(size: 10, weight: .bold))
+                            .font(.system(size: 10 * s, weight: .bold))
                             .foregroundStyle(label == "N" ? .white : .white.opacity(0.5))
                             .rotationEffect(.degrees(-compassRotation))
                             .offset(
@@ -230,7 +232,7 @@ struct CurrentConditionsView: View {
                     // Wave indicator (cyan) — curling wave
                     WaveCurlIndicator()
                         .fill(.cyan)
-                        .frame(width: 20, height: 16)
+                        .frame(width: 20 * s, height: 16 * s)
                         .rotationEffect(.degrees(-compassRotation - condition.waveDirection))
                         .offset(y: -ringRadius)
                         .rotationEffect(.degrees(condition.waveDirection))
@@ -247,7 +249,7 @@ struct CurrentConditionsView: View {
                         let windAngle = windDir + absNudge
                         WindStreakIndicator()
                             .fill(.white.opacity(0.8))
-                            .frame(width: 18, height: 16)
+                            .frame(width: 18 * s, height: 16 * s)
                             .rotationEffect(.degrees(-compassRotation - windAngle))
                             .offset(y: -ringRadius)
                             .rotationEffect(.degrees(windAngle))
@@ -256,7 +258,7 @@ struct CurrentConditionsView: View {
                     if let bearing = coastBearing {
                         ShoreIndicator()
                             .fill(.orange.opacity(0.9))
-                            .frame(width: 14, height: 12)
+                            .frame(width: 14 * s, height: 12 * s)
                             .rotationEffect(.degrees(-compassRotation - bearing))
                             .offset(y: -ringRadius)
                             .rotationEffect(.degrees(bearing))
@@ -274,40 +276,40 @@ struct CurrentConditionsView: View {
                                 Text(coastDistanceString(dist))
                             }
                         }
-                        .font(.system(size: 9, weight: .medium))
+                        .font(.system(size: 9 * s, weight: .medium))
                         .foregroundStyle(.orange.opacity(0.7))
                     } else if let coast = coastDirection {
                         Text("\(coast.label) Coast")
-                            .font(.system(size: 9, weight: .medium))
+                            .font(.system(size: 9 * s, weight: .medium))
                             .foregroundStyle(.white.opacity(0.5))
                     }
                     Spacer()
                 }
-                .padding(.top, 4)
+                .padding(.top, 4 * s)
 
                 // Center info (fixed, non-rotating)
-                VStack(spacing: 1) {
+                VStack(spacing: 2 * s) {
                     if let windSpeed = condition.windSpeed {
                         HStack(spacing: 2) {
                             Image(systemName: "wind")
-                                .font(.system(size: 7))
+                                .font(.system(size: 7 * s))
                             Text(WaveFormatter.windString(windSpeed, useMetric: useMetric))
                         }
-                        .font(.system(size: 9, weight: .medium))
+                        .font(.system(size: 9 * s, weight: .medium))
                         .foregroundStyle(.white.opacity(0.6))
                     }
 
                     Text(WaveFormatter.heightString(condition.waveHeight, useMetric: useMetric))
-                        .font(.system(size: 22, weight: .bold, design: .rounded))
+                        .font(.system(size: 22 * s, weight: .bold, design: .rounded))
                         .foregroundStyle(.white)
 
                     Text(WaveFormatter.periodString(condition.wavePeriod))
-                        .font(.system(size: 11, weight: .semibold, design: .rounded))
+                        .font(.system(size: 11 * s, weight: .semibold, design: .rounded))
                         .foregroundStyle(.white.opacity(0.7))
 
                     if let sst = condition.seaSurfaceTemperature {
                         Text(WaveFormatter.temperatureString(sst, useMetric: useMetric))
-                            .font(.system(size: 9, weight: .medium))
+                            .font(.system(size: 9 * s, weight: .medium))
                             .foregroundStyle(.white.opacity(0.5))
                     }
                 }
@@ -315,32 +317,32 @@ struct CurrentConditionsView: View {
                 // Bottom legend (fixed)
                 VStack {
                     Spacer()
-                    HStack(spacing: 8) {
+                    HStack(spacing: 8 * s) {
                         HStack(spacing: 3) {
                             WaveCurlIndicator()
                                 .fill(.cyan)
-                                .frame(width: 8, height: 6)
+                                .frame(width: 8 * s, height: 6 * s)
                             Text("wave")
                         }
                         HStack(spacing: 3) {
                             WindStreakIndicator()
                                 .fill(.white.opacity(0.8))
-                                .frame(width: 7, height: 6)
+                                .frame(width: 7 * s, height: 6 * s)
                             Text("wind")
                         }
                         if coastBearing != nil {
                             HStack(spacing: 3) {
                                 ShoreIndicator()
                                     .fill(.orange.opacity(0.9))
-                                    .frame(width: 7, height: 6)
+                                    .frame(width: 7 * s, height: 6 * s)
                                 Text("shore")
                             }
                         }
                     }
-                    .font(.system(size: 8))
+                    .font(.system(size: 8 * s))
                     .foregroundStyle(.white.opacity(0.4))
                 }
-                .padding(.bottom, 2)
+                .padding(.bottom, 4 * s)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }

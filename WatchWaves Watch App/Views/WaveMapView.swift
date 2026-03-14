@@ -40,8 +40,19 @@ struct WaveMapView: View {
 
     var body: some View {
         ZStack {
-            // Satellite map with webcam pins
-            Map(initialPosition: .region(mapRegion), interactionModes: [.pan, .zoom]) {
+            // Satellite map with webcam pins — camera locked to Malta + Gozo + buffer
+            Map(
+                initialPosition: .region(mapRegion),
+                bounds: MapCameraBounds(
+                    centerCoordinateBounds: MKCoordinateRegion(
+                        center: CLLocationCoordinate2D(latitude: 35.95, longitude: 14.35),
+                        span: MKCoordinateSpan(latitudeDelta: 0.7, longitudeDelta: 0.9)
+                    ),
+                    minimumDistance: 500,
+                    maximumDistance: 130_000
+                ),
+                interactionModes: [.pan, .zoom]
+            ) {
                 ForEach(WebcamPin.all) { pin in
                     Annotation("", coordinate: pin.coordinate, anchor: .bottom) {
                         WebcamPinMarker(pin: pin) { selectedPin = pin }
