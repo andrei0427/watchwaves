@@ -69,7 +69,7 @@ struct ConditionsTab: View {
                 NavigationStack {
                     ForecastView(
                         forecast: viewModel.forecast,
-                        useMetric: viewModel.preferences.useMetric,
+                        useMetric: viewModel.preferences.useMetricUnits,
                         lastUpdated: DataStore.shared.lastUpdateTime
                     )
                     .background(Color(red: 5/255, green: 14/255, blue: 28/255).ignoresSafeArea())
@@ -279,7 +279,7 @@ struct CompassTab: View {
             CurrentConditionsView(
                 mode: .compass,
                 condition: condition,
-                useMetric: viewModel.preferences.useMetric,
+                useMetric: viewModel.preferences.useMetricUnits,
                 coastDirection: viewModel.selectedCoast?.direction,
                 heading: viewModel.locationService.heading,
                 lastUpdated: DataStore.shared.lastUpdateTime,

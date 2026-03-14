@@ -104,11 +104,13 @@ struct WebcamSnapshotView: View {
     @State private var lastFetched: Date?
     // Loading state
     @State private var resolving = false
-    // Zoom state (snapshot only)
+    // Zoom state (snapshot only, iOS)
+    #if os(iOS)
     @State private var scale: CGFloat = 1.0
     @State private var lastScale: CGFloat = 1.0
     @State private var offset: CGSize = .zero
     @State private var lastOffset: CGSize = .zero
+    #endif
 
     var body: some View {
         ZStack {
@@ -119,6 +121,7 @@ struct WebcamSnapshotView: View {
                     .ignoresSafeArea()
                     .disabled(true)
             } else if let image {
+                #if os(iOS)
                 image
                     .resizable()
                     .scaledToFill()
@@ -154,6 +157,13 @@ struct WebcamSnapshotView: View {
                             offset = .zero; lastOffset = .zero
                         }
                     }
+                #else
+                image
+                    .resizable()
+                    .scaledToFill()
+                    .clipped()
+                    .ignoresSafeArea()
+                #endif
             } else {
                 VStack(spacing: 6) {
                     if resolving {
@@ -213,11 +223,13 @@ struct WebcamSnapshotView: View {
                                 .font(.system(size: 9))
                                 .foregroundStyle(.white.opacity(0.6))
                         }
+                        #if os(iOS)
                         if scale > 1 {
                             Text("Double-tap to reset")
                                 .font(.system(size: 8))
                                 .foregroundStyle(.white.opacity(0.4))
                         }
+                        #endif
                     }
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
