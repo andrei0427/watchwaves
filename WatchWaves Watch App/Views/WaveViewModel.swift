@@ -80,7 +80,10 @@ final class WaveViewModel {
     private nonisolated func shouldReprobe(from coordinate: CLLocationCoordinate2D) -> Bool {
         guard let cached = store.coastDetection else { return true }
         let distance = GeoHelpers.distanceKm(from: cached.probeOrigin, to: coordinate)
-        return distance > reprobeThresholdKm
+        if distance > reprobeThresholdKm { return true }
+        // Also reprobe if cached data is older than 6 hours (handles algorithm updates)
+        let age = Date().timeIntervalSince(cached.timestamp)
+        return age > 6 * 3600
     }
 
     private func updateSelectedCoast(from detection: CoastDetectionResult) {

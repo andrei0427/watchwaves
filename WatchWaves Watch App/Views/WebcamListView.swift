@@ -1,4 +1,7 @@
 import SwiftUI
+import AVKit
+import AVFoundation
+import WatchKit
 
 // MARK: - Section model
 
@@ -86,19 +89,29 @@ struct WebcamListView: View {
     }
 }
 
-// MARK: - Snapshot View
+// MARK: - Webcam View (live stream preferred, snapshot fallback)
 
 struct WebcamSnapshotView: View {
     let entry: WebcamEntry
+    @Environment(\.dismiss) private var dismiss
+
+    // Live stream
+    @State private var player: AVPlayer?
+    // Snapshot fallback
     @State private var image: Image?
     @State private var lastFetched: Date?
-    @Environment(\.dismiss) private var dismiss
+    // Loading state
+    @State private var resolving = false
 
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
 
-            if let image {
+            if let player {
+                VideoPlayer(player: player)
+                    .ignoresSafeArea()
+                    .disabled(true)          // prevent tap-to-pause interfering
+            } else if let image {
                 image
                     .resizable()
                     .scaledToFill()
@@ -106,9 +119,13 @@ struct WebcamSnapshotView: View {
                     .ignoresSafeArea()
             } else {
                 VStack(spacing: 6) {
-                    Image(systemName: "camera.fill")
-                        .font(.title3)
-                        .foregroundStyle(.white.opacity(0.3))
+                    if resolving {
+                        ProgressView()
+                    } else {
+                        Image(systemName: "camera.fill")
+                            .font(.title3)
+                            .foregroundStyle(.white.opacity(0.3))
+                    }
                     Text(entry.name)
                         .font(.caption2)
                         .foregroundStyle(.secondary)
@@ -116,36 +133,109 @@ struct WebcamSnapshotView: View {
                 }
             }
 
+            // Overlays
             VStack {
-                Spacer()
-                VStack(spacing: 2) {
-                    Text(entry.name)
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .lineLimit(1)
-                    if let lastFetched {
-                        Text(lastFetched.formatted(date: .omitted, time: .standard))
-                            .font(.system(size: 9))
-                            .foregroundStyle(.white.opacity(0.6))
+                if player != nil {
+                    HStack {
+                        HStack(spacing: 3) {
+                            Circle()
+                                .fill(.red)
+                                .frame(width: 5, height: 5)
+                            Text("LIVE")
+                                .font(.system(size: 9, weight: .heavy, design: .rounded))
+                                .foregroundStyle(.white)
+                        }
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 3)
+                        .background(.black.opacity(0.55), in: Capsule())
+                        .padding(.top, 6)
+                        .padding(.leading, 6)
+                        Spacer()
                     }
                 }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(.black.opacity(0.55), in: Capsule())
-                .padding(.bottom, 6)
+                Spacer()
+                // Name label — shown over snapshot only (VideoPlayer has its own chrome)
+                if player == nil {
+                    VStack(spacing: 2) {
+                        Text(entry.name)
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .lineLimit(1)
+                        if let lastFetched {
+                            Text(lastFetched.formatted(date: .omitted, time: .standard))
+                                .font(.system(size: 9))
+                                .foregroundStyle(.white.opacity(0.6))
+                        }
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(.black.opacity(0.55), in: Capsule())
+                    .padding(.bottom, 6)
+                }
             }
         }
         .navigationBarHidden(true)
         .onTapGesture { dismiss() }
-        .task {
-            await refreshLoop()
+        .task { await start() }
+        .onDisappear { player?.pause() }
+    }
+
+    // MARK: - Start
+
+    private func start() async {
+        guard let pageURL = entry.pageURL else {
+            await snapshotLoop(); return
+        }
+        resolving = true
+        if let streamURL = await resolveStreamURL(from: pageURL) {
+            resolving = false
+            let p = AVPlayer(url: streamURL)
+            p.play()
+            player = p
+        } else {
+            resolving = false
+            await snapshotLoop()
         }
     }
 
-    private func refreshLoop() async {
+    // MARK: - Live stream URL extraction
+
+    private func resolveStreamURL(from pageURL: URL) async -> URL? {
+        var request = URLRequest(url: pageURL)
+        request.setValue(
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+            forHTTPHeaderField: "User-Agent"
+        )
+        guard let (data, _) = try? await URLSession.shared.data(for: request),
+              let html = String(data: data, encoding: .utf8) else { return nil }
+
+        // Pattern 1: relative m3u8 URL in Clappr player config, e.g. source:'livee.m3u8?a=TOKEN'
+        if let range = html.range(of: #"live[e]?\.m3u8\?a=[a-z0-9]+"#, options: .regularExpression) {
+            let matched = String(html[range])
+            if let token = matched.components(separatedBy: "?a=").last {
+                return URL(string: "https://hd-auth.skylinewebcams.com/live.m3u8?a=\(token)")
+            }
+        }
+
+        // Pattern 2: full absolute m3u8 URL
+        if let range = html.range(of: #"https://hd-auth\.skylinewebcams\.com/live[e]?\.m3u8\?a=[a-z0-9]+"#, options: .regularExpression) {
+            return URL(string: String(html[range]))
+        }
+
+        // Pattern 3: token in webcam.js script reference
+        if let range = html.range(of: #"(?<=webcam\.js\?a=)[a-z0-9]+"#, options: .regularExpression) {
+            return URL(string: "https://hd-auth.skylinewebcams.com/live.m3u8?a=\(String(html[range]))")
+        }
+
+        return nil
+    }
+
+    // MARK: - Snapshot fallback
+
+    private func snapshotLoop() async {
         while !Task.isCancelled {
             await loadSnapshot()
-            try? await Task.sleep(for: .seconds(8))
+            try? await Task.sleep(for: .seconds(30))
         }
     }
 

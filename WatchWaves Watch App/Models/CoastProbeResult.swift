@@ -40,8 +40,8 @@ struct CoastDetectionResult: Codable {
         CLLocationCoordinate2D(latitude: probeOriginLatitude, longitude: probeOriginLongitude)
     }
 
-    /// The nearest coast (shortest distance to ocean)
+    /// The nearest coast (shortest refined shore distance)
     var nearestCoast: CoastProbeResult? {
-        detectedCoasts.min(by: { $0.distanceKm < $1.distanceKm })
+        detectedCoasts.min(by: { $0.bestDistanceKm < $1.bestDistanceKm })
     }
 }

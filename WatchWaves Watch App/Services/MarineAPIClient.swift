@@ -24,22 +24,22 @@ actor MarineAPIClient {
         return parseConditions(from: marine, weather: weather)
     }
 
-    /// Probe a coordinate — returns true if ocean (non-null wave data), false if land
+    /// Probe a coordinate — returns true if ocean (elevation ≤ 0m).
+    /// Uses the Open-Meteo elevation API (~90m Copernicus DEM resolution),
+    /// which correctly distinguishes open sea from land even inside enclosed
+    /// harbours — unlike the marine wave model whose ~28km grid treats Grand
+    /// Harbour as indistinguishable from open Mediterranean.
     func probeIsOcean(at coordinate: CLLocationCoordinate2D) async throws -> Bool {
-        var components = URLComponents(string: marineBaseURL)!
+        var components = URLComponents(string: "https://api.open-meteo.com/v1/elevation")!
         components.queryItems = [
-            URLQueryItem(name: "latitude", value: String(format: "%.4f", coordinate.latitude)),
-            URLQueryItem(name: "longitude", value: String(format: "%.4f", coordinate.longitude)),
-            URLQueryItem(name: "hourly", value: "wave_height"),
-            URLQueryItem(name: "forecast_hours", value: "1"),
+            URLQueryItem(name: "latitude", value: String(format: "%.5f", coordinate.latitude)),
+            URLQueryItem(name: "longitude", value: String(format: "%.5f", coordinate.longitude)),
         ]
 
         let (data, _) = try await session.data(from: components.url!)
-        let response = try JSONDecoder().decode(MarineAPIResponse.self, from: data)
-
-        guard let heights = response.hourly?.waveHeight else { return false }
-        let isOcean = heights.contains(where: { $0 != nil })
-        return isOcean
+        let response = try JSONDecoder().decode(ElevationAPIResponse.self, from: data)
+        guard let elevation = response.elevation?.first else { return false }
+        return elevation <= 0
     }
 
     private func fetchMarine(at coordinate: CLLocationCoordinate2D, hours: Int) async throws -> MarineAPIResponse {

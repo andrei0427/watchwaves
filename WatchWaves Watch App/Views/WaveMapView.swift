@@ -42,11 +42,9 @@ struct WaveMapView: View {
                         WebcamPinMarker(pin: pin) { selectedPin = pin }
                     }
                 }
-                // User location — moves with the map
                 Annotation("", coordinate: detection.probeOrigin, anchor: .center) {
                     UserLocationPin()
                 }
-                // Detected shore point — moves with the map
                 if let coast = selectedCoast {
                     Annotation("", coordinate: coast.bestCoordinate, anchor: .center) {
                         ShorePointPin()
@@ -56,7 +54,7 @@ struct WaveMapView: View {
             .mapStyle(.imagery)
 
             // Dark overlay to mute map detail — lets particles pop
-            Color.black.opacity(0.55)
+            Color.black.opacity(0.3)
                 .ignoresSafeArea()
                 .allowsHitTesting(false)
 
@@ -439,14 +437,15 @@ private struct ShorePointPin: View {
         ZStack {
             Rectangle()
                 .fill(.orange)
-                .frame(width: 11, height: 1.5)
+                .frame(width: 13, height: 2)
             Rectangle()
                 .fill(.orange)
-                .frame(width: 1.5, height: 11)
+                .frame(width: 2, height: 13)
             Circle()
                 .fill(.orange)
-                .frame(width: 3, height: 3)
+                .frame(width: 4, height: 4)
         }
+        .shadow(color: .orange.opacity(0.9), radius: 4)
     }
 }
 
@@ -461,9 +460,11 @@ private struct WebcamPinMarker: View {
             ZStack(alignment: .topTrailing) {
                 Image(systemName: "video.fill")
                     .font(.system(size: 10, weight: .bold))
-                    .foregroundStyle(.black)
+                    .foregroundStyle(.white)
                     .padding(5)
                     .background(.cyan, in: Circle())
+                    .overlay(Circle().stroke(.white.opacity(0.9), lineWidth: 1.5))
+                    .shadow(color: .cyan.opacity(0.8), radius: 4)
 
                 if pin.cameras.count > 1 {
                     Text("\(pin.cameras.count)")

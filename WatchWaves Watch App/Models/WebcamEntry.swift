@@ -5,30 +5,36 @@ struct WebcamEntry: Identifiable {
     let id: Int
     let name: String
     let coordinate: CLLocationCoordinate2D
+    /// Skyline page URL — fetched at runtime to extract the live HLS stream token.
+    let pageURL: URL?
 
     var snapshotURL: URL {
         URL(string: "https://cdn.skylinewebcams.com/live\(id).jpg")!
     }
 
+    private static func skyline(_ path: String) -> URL? {
+        URL(string: "https://www.skylinewebcams.com/en/webcam/malta/\(path).html")
+    }
+
     static let coastal: [WebcamEntry] = [
-        WebcamEntry(id: 207,  name: "Grand Harbour",           coordinate: CLLocationCoordinate2D(latitude: 35.8979, longitude: 14.5125)),
-        WebcamEntry(id: 4000, name: "Grand Harbour Entrance",  coordinate: CLLocationCoordinate2D(latitude: 35.9003, longitude: 14.5069)),
-        WebcamEntry(id: 257,  name: "Valletta Seaside",        coordinate: CLLocationCoordinate2D(latitude: 35.8933, longitude: 14.5228)),
-        WebcamEntry(id: 213,  name: "Marsaxlokk",              coordinate: CLLocationCoordinate2D(latitude: 35.8414, longitude: 14.5437)),
-        WebcamEntry(id: 261,  name: "Marsaxlokk Promenade",    coordinate: CLLocationCoordinate2D(latitude: 35.8403, longitude: 14.5453)),
-        WebcamEntry(id: 214,  name: "Birżebbuġa / Pretty Bay", coordinate: CLLocationCoordinate2D(latitude: 35.8222, longitude: 14.5250)),
-        WebcamEntry(id: 5223, name: "St. George's Bay",        coordinate: CLLocationCoordinate2D(latitude: 35.8194, longitude: 14.5314)),
-        WebcamEntry(id: 786,  name: "Golden Bay",              coordinate: CLLocationCoordinate2D(latitude: 35.9542, longitude: 14.3328)),
-        WebcamEntry(id: 755,  name: "Ċirkewwa Bay",            coordinate: CLLocationCoordinate2D(latitude: 35.9853, longitude: 14.3367)),
-        WebcamEntry(id: 754,  name: "Paradise Bay",            coordinate: CLLocationCoordinate2D(latitude: 35.9878, longitude: 14.3294)),
-        WebcamEntry(id: 626,  name: "Ċirkewwa Water's Edge",   coordinate: CLLocationCoordinate2D(latitude: 35.9858, longitude: 14.3342)),
-        WebcamEntry(id: 356,  name: "Sliema / St. Julian's",   coordinate: CLLocationCoordinate2D(latitude: 35.9094, longitude: 14.5006)),
-        WebcamEntry(id: 4455, name: "Sliema Harbour",          coordinate: CLLocationCoordinate2D(latitude: 35.9033, longitude: 14.5072)),
-        WebcamEntry(id: 3372, name: "St. Paul's Bay",          coordinate: CLLocationCoordinate2D(latitude: 35.9500, longitude: 14.3994)),
-        WebcamEntry(id: 5304, name: "Buġibba",                 coordinate: CLLocationCoordinate2D(latitude: 35.9511, longitude: 14.4183)),
-        WebcamEntry(id: 254,  name: "Wied iż-Żurrieq",         coordinate: CLLocationCoordinate2D(latitude: 35.8181, longitude: 14.4492)),
-        WebcamEntry(id: 221,  name: "Marsalforn Bay (Gozo)",   coordinate: CLLocationCoordinate2D(latitude: 36.0736, longitude: 14.2544)),
-        WebcamEntry(id: 864,  name: "Mġarr Harbour (Gozo)",    coordinate: CLLocationCoordinate2D(latitude: 36.0194, longitude: 14.2983)),
+        WebcamEntry(id: 207,  name: "Grand Harbour",           coordinate: CLLocationCoordinate2D(latitude: 35.8979, longitude: 14.5125), pageURL: skyline("malta/floriana/grand-harbour-valletta-waterfront")),
+        WebcamEntry(id: 4000, name: "Grand Harbour Entrance",  coordinate: CLLocationCoordinate2D(latitude: 35.9003, longitude: 14.5069), pageURL: skyline("malta/valletta/grand-harbour-entrance")),
+        WebcamEntry(id: 257,  name: "Valletta Seaside",        coordinate: CLLocationCoordinate2D(latitude: 35.8933, longitude: 14.5228), pageURL: skyline("malta/valletta/valletta-seaside-promenade")),
+        WebcamEntry(id: 213,  name: "Marsaxlokk",              coordinate: CLLocationCoordinate2D(latitude: 35.8414, longitude: 14.5437), pageURL: skyline("malta/marsaxlokk/marsaxlokk-harbour")),
+        WebcamEntry(id: 261,  name: "Marsaxlokk Promenade",    coordinate: CLLocationCoordinate2D(latitude: 35.8403, longitude: 14.5453), pageURL: skyline("malta/marsaxlokk/marsaxlokk-seaside-promenade")),
+        WebcamEntry(id: 214,  name: "Birżebbuġa / Pretty Bay", coordinate: CLLocationCoordinate2D(latitude: 35.8222, longitude: 14.5250), pageURL: skyline("malta/birzebbuga/birzebbuga-beach-pretty-bay")),
+        WebcamEntry(id: 5223, name: "St. George's Bay",        coordinate: CLLocationCoordinate2D(latitude: 35.9206, longitude: 14.4878), pageURL: skyline("malta/st-julians/st-george-beach")),
+        WebcamEntry(id: 786,  name: "Golden Bay",              coordinate: CLLocationCoordinate2D(latitude: 35.9542, longitude: 14.3328), pageURL: skyline("malta/mellieha/golden-bay")),
+        WebcamEntry(id: 755,  name: "Ċirkewwa Bay",            coordinate: CLLocationCoordinate2D(latitude: 35.9853, longitude: 14.3367), pageURL: skyline("malta/cirkewwa/cirkewwa-bay")),
+        WebcamEntry(id: 754,  name: "Paradise Bay",            coordinate: CLLocationCoordinate2D(latitude: 35.9878, longitude: 14.3294), pageURL: skyline("malta/cirkewwa/paradise-bay")),
+        WebcamEntry(id: 626,  name: "Ċirkewwa Water's Edge",   coordinate: CLLocationCoordinate2D(latitude: 35.9858, longitude: 14.3342), pageURL: skyline("malta/cirkewwa/cirkewwa-waters-edge")),
+        WebcamEntry(id: 356,  name: "Sliema / St. Julian's",   coordinate: CLLocationCoordinate2D(latitude: 35.9094, longitude: 14.5006), pageURL: skyline("malta/sliema/sliema-waters-edge")),
+        WebcamEntry(id: 4455, name: "Sliema Harbour",          coordinate: CLLocationCoordinate2D(latitude: 35.9033, longitude: 14.5072), pageURL: skyline("malta/valletta/sliema-harbour")),
+        WebcamEntry(id: 3372, name: "St. Paul's Bay",          coordinate: CLLocationCoordinate2D(latitude: 35.9500, longitude: 14.3994), pageURL: skyline("malta/st-paul-s-bay/malta-st-paul-s-bay")),
+        WebcamEntry(id: 5304, name: "Buġibba",                 coordinate: CLLocationCoordinate2D(latitude: 35.9511, longitude: 14.4183), pageURL: skyline("malta/bugibba/st-pauls-bay")),
+        WebcamEntry(id: 254,  name: "Wied iż-Żurrieq",         coordinate: CLLocationCoordinate2D(latitude: 35.8181, longitude: 14.4492), pageURL: skyline("malta/qrendi/wied-iz-zurrieq")),
+        WebcamEntry(id: 221,  name: "Marsalforn Bay (Gozo)",   coordinate: CLLocationCoordinate2D(latitude: 36.0736, longitude: 14.2544), pageURL: skyline("gozo/marsalforn/marsalforn-bay")),
+        WebcamEntry(id: 864,  name: "Mġarr Harbour (Gozo)",    coordinate: CLLocationCoordinate2D(latitude: 36.0194, longitude: 14.2983), pageURL: skyline("gozo/mgarr/gozo-mgarr")),
     ]
 }
 
@@ -47,8 +53,10 @@ struct WebcamPin: Identifiable {
                       cameras: cams([207, 4000, 257])),
             WebcamPin(id: "marsaxlokk",    coordinate: CLLocationCoordinate2D(latitude: 35.8408, longitude: 14.5445),
                       cameras: cams([213, 261])),
-            WebcamPin(id: "birzebbuga",    coordinate: CLLocationCoordinate2D(latitude: 35.8208, longitude: 14.5283),
-                      cameras: cams([214, 5223])),
+            WebcamPin(id: "birzebbuga",    coordinate: CLLocationCoordinate2D(latitude: 35.8222, longitude: 14.5250),
+                      cameras: cams([214])),
+            WebcamPin(id: "stgeorges",     coordinate: CLLocationCoordinate2D(latitude: 35.9206, longitude: 14.4878),
+                      cameras: cams([5223])),
             WebcamPin(id: "golden-bay",    coordinate: CLLocationCoordinate2D(latitude: 35.9542, longitude: 14.3328),
                       cameras: cams([786])),
             WebcamPin(id: "cirkewwa",      coordinate: CLLocationCoordinate2D(latitude: 35.9863, longitude: 14.3334),

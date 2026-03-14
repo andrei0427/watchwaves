@@ -35,6 +35,11 @@ struct MarineHourlyData: Codable {
     }
 }
 
+/// Open-Meteo Elevation API response
+struct ElevationAPIResponse: Codable {
+    let elevation: [Double]?
+}
+
 /// Open-Meteo Weather/Forecast API response (for wind data)
 struct WeatherAPIResponse: Codable {
     let latitude: Double

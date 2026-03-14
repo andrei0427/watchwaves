@@ -124,8 +124,8 @@ actor CoastDetectionService {
             }
         }
 
-        // Return the last land point (lo) — right at the shore
-        let shorePoint = GeoHelpers.destinationPoint(from: origin, bearing: bearing, distanceKm: lo)
-        return (lo, shorePoint)
+        // Return the ocean-side boundary (hi) — the water's edge
+        let shorePoint = GeoHelpers.destinationPoint(from: origin, bearing: bearing, distanceKm: hi)
+        return (hi, shorePoint)
     }
 }

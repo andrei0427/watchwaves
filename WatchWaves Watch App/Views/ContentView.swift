@@ -3,7 +3,6 @@ import SwiftUI
 struct ContentView: View {
     @State private var viewModel = WaveViewModel()
     @State private var showForecast = false
-    @State private var showMap = false
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
@@ -13,8 +12,10 @@ struct ContentView: View {
                     .tag(0)
                 compassTab
                     .tag(1)
-                WebcamListView()
+                mapTab
                     .tag(2)
+                WebcamListView()
+                    .tag(3)
             }
             .tabViewStyle(.verticalPage)
         }
@@ -91,7 +92,7 @@ struct ContentView: View {
         }
     }
 
-    // MARK: - Tab 2: Compass → map sheet on tap
+    // MARK: - Tab 2: Compass
 
     @ViewBuilder
     private var compassTab: some View {
@@ -106,17 +107,8 @@ struct ContentView: View {
                 beachName: viewModel.nearestBeachName,
                 coastBearing: viewModel.coastBearing,
                 coastDistanceKm: viewModel.coastDistanceKm,
-                onTap: { showMap = true }
+                onTap: {}
             )
-            .sheet(isPresented: $showMap) {
-                if let detection = viewModel.coastDetection {
-                    WaveMapView(
-                        detection: detection,
-                        condition: condition,
-                        selectedCoast: viewModel.selectedCoast
-                    )
-                }
-            }
         } else if viewModel.isLoading {
             VStack(spacing: 8) {
                 ProgressView()
@@ -126,6 +118,31 @@ struct ContentView: View {
             }
         } else {
             Image(systemName: "location.slash")
+                .font(.title2)
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    // MARK: - Tab 3: Map (persistent — pre-warms tiles, no sheet delay)
+
+    @ViewBuilder
+    private var mapTab: some View {
+        if let detection = viewModel.coastDetection,
+           let condition = viewModel.currentCondition {
+            WaveMapView(
+                detection: detection,
+                condition: condition,
+                selectedCoast: viewModel.selectedCoast
+            )
+        } else if viewModel.isLoading {
+            VStack(spacing: 8) {
+                ProgressView()
+                Text("Detecting coast...")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        } else {
+            Image(systemName: "map")
                 .font(.title2)
                 .foregroundStyle(.secondary)
         }
