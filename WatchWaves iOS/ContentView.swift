@@ -11,6 +11,9 @@ struct ContentView: View {
             ConditionsTab(viewModel: viewModel)
                 .tabItem { Label("Waves", systemImage: "water.waves") }
 
+            CompassTab(viewModel: viewModel)
+                .tabItem { Label("Compass", systemImage: "location.north.line") }
+
             MapTab(viewModel: viewModel)
                 .tabItem { Label("Map", systemImage: "map") }
 
@@ -63,7 +66,20 @@ struct ConditionsTab: View {
                 }
             }
             .sheet(isPresented: $showForecast) {
-                ForecastSheet(forecast: viewModel.forecast)
+                NavigationStack {
+                    ForecastView(
+                        forecast: viewModel.forecast,
+                        useMetric: viewModel.preferences.useMetric,
+                        lastUpdated: DataStore.shared.lastUpdateTime
+                    )
+                    .background(Color(red: 5/255, green: 14/255, blue: 28/255).ignoresSafeArea())
+                    .toolbar {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button("Done") { showForecast = false }
+                        }
+                    }
+                }
+                .preferredColorScheme(.dark)
             }
         }
     }
@@ -253,6 +269,41 @@ struct ConditionsTab: View {
     }
 }
 
+// MARK: - Compass Tab
+
+struct CompassTab: View {
+    let viewModel: WaveViewModel
+
+    var body: some View {
+        if let condition = viewModel.currentCondition {
+            CurrentConditionsView(
+                mode: .compass,
+                condition: condition,
+                useMetric: viewModel.preferences.useMetric,
+                coastDirection: viewModel.selectedCoast?.direction,
+                heading: viewModel.locationService.heading,
+                lastUpdated: DataStore.shared.lastUpdateTime,
+                beachName: viewModel.nearestBeachName,
+                coastBearing: viewModel.coastBearing,
+                coastDistanceKm: viewModel.coastDistanceKm
+            )
+            .ignoresSafeArea()
+        } else if viewModel.isLoading {
+            VStack(spacing: 16) {
+                ProgressView().scaleEffect(1.5)
+                Text("Loading conditions…").foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color(red: 5/255, green: 14/255, blue: 28/255).ignoresSafeArea())
+        } else {
+            Image(systemName: "location.north.line")
+                .font(.system(size: 52)).foregroundStyle(.cyan)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color(red: 5/255, green: 14/255, blue: 28/255).ignoresSafeArea())
+        }
+    }
+}
+
 // MARK: - Map Tab
 
 struct MapTab: View {
@@ -280,45 +331,6 @@ struct MapTab: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(Color(red: 5/255, green: 14/255, blue: 28/255).ignoresSafeArea())
             }
-        }
-    }
-}
-
-// MARK: - Forecast Sheet
-
-struct ForecastSheet: View {
-    let forecast: [WaveCondition]
-    @Environment(\.dismiss) private var dismiss
-
-    var body: some View {
-        NavigationStack {
-            List(forecast) { condition in
-                HStack {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(condition.time, format: .dateTime.weekday(.abbreviated).month().day().hour())
-                            .font(.subheadline).foregroundStyle(.primary)
-                        Text(condition.directionLabel)
-                            .font(.caption).foregroundStyle(.secondary)
-                    }
-                    Spacer()
-                    VStack(alignment: .trailing, spacing: 2) {
-                        Text(WaveFormatter.heightString(condition.waveHeight, useMetric: true))
-                            .font(.subheadline.bold())
-                        Text(WaveFormatter.periodString(condition.wavePeriod))
-                            .font(.caption).foregroundStyle(.secondary)
-                    }
-                }
-                .listRowBackground(Color.clear)
-            }
-            .listStyle(.plain)
-            .navigationTitle("Forecast")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") { dismiss() }
-                }
-            }
-            .preferredColorScheme(.dark)
         }
     }
 }

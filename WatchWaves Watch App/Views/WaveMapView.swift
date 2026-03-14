@@ -8,8 +8,13 @@ struct WaveMapView: View {
 
     private let coastByDirection: [CompassDirection: CoastProbeResult]
     private let maxRadiusKm: Double
+    #if os(iOS)
+    private let waveParticleCount = 320
+    private let windParticleCount = 200
+    #else
     private let waveParticleCount = 120
     private let windParticleCount = 80
+    #endif
     @State private var selectedPin: WebcamPin?
 
     init(detection: CoastDetectionResult, condition: WaveCondition?, selectedCoast: CoastProbeResult?) {
