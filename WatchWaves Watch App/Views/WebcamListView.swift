@@ -120,6 +120,10 @@ struct WebcamSnapshotView: View {
                 VideoPlayer(player: player)
                     .ignoresSafeArea()
                     .disabled(true)
+                    #if os(iOS)
+                    .scaleEffect(scale)
+                    .offset(offset)
+                    #endif
             } else if let image {
                 #if os(iOS)
                 image
@@ -129,34 +133,6 @@ struct WebcamSnapshotView: View {
                     .offset(offset)
                     .clipped()
                     .ignoresSafeArea()
-                    .gesture(
-                        MagnificationGesture()
-                            .onChanged { value in
-                                scale = max(1, lastScale * value)
-                            }
-                            .onEnded { _ in
-                                lastScale = scale
-                            }
-                            .simultaneously(with:
-                                DragGesture()
-                                    .onChanged { value in
-                                        guard scale > 1 else { return }
-                                        offset = CGSize(
-                                            width: lastOffset.width + value.translation.width,
-                                            height: lastOffset.height + value.translation.height
-                                        )
-                                    }
-                                    .onEnded { _ in
-                                        lastOffset = offset
-                                    }
-                            )
-                    )
-                    .onTapGesture(count: 2) {
-                        withAnimation(.spring(duration: 0.3)) {
-                            scale = 1; lastScale = 1
-                            offset = .zero; lastOffset = .zero
-                        }
-                    }
                 #else
                 image
                     .resizable()
@@ -180,6 +156,54 @@ struct WebcamSnapshotView: View {
                 }
             }
 
+            // Gesture overlay — sits above content, below UI labels
+            #if os(iOS)
+            Color.clear
+                .contentShape(Rectangle())
+                .ignoresSafeArea()
+                .gesture(
+                    MagnificationGesture()
+                        .onChanged { value in
+                            let newScale = max(1, lastScale * value)
+                            scale = newScale
+                            // As we zoom out, pull offset proportionally toward center
+                            if lastScale > 1 {
+                                let progress = (newScale - 1) / (lastScale - 1)
+                                offset = CGSize(
+                                    width: lastOffset.width * progress,
+                                    height: lastOffset.height * progress
+                                )
+                            }
+                        }
+                        .onEnded { _ in
+                            lastScale = scale
+                            lastOffset = offset
+                            if scale <= 1 {
+                                scale = 1; lastScale = 1
+                                offset = .zero; lastOffset = .zero
+                            }
+                        }
+                        .simultaneously(with:
+                            DragGesture()
+                                .onChanged { value in
+                                    guard scale > 1 else { return }
+                                    offset = CGSize(
+                                        width: lastOffset.width + value.translation.width,
+                                        height: lastOffset.height + value.translation.height
+                                    )
+                                }
+                                .onEnded { _ in lastOffset = offset }
+                        )
+                )
+                .onTapGesture(count: 2) {
+                    withAnimation(.spring(duration: 0.3)) {
+                        scale = 1; lastScale = 1
+                        offset = .zero; lastOffset = .zero
+                    }
+                }
+                .onTapGesture { dismiss() }
+            #endif
+
             // Overlays
             VStack {
                 HStack {
@@ -197,15 +221,6 @@ struct WebcamSnapshotView: View {
                         .background(.black.opacity(0.55), in: Capsule())
                     }
                     Spacer()
-                    // Close button — replaces tap-to-dismiss so it doesn't conflict with zoom
-                    Button { dismiss() } label: {
-                        Image(systemName: "xmark")
-                            .font(.system(size: 12, weight: .bold))
-                            .foregroundStyle(.white)
-                            .padding(8)
-                            .background(.black.opacity(0.55), in: Circle())
-                    }
-                    .buttonStyle(.plain)
                 }
                 .padding(.top, 6)
                 .padding(.horizontal, 6)
@@ -224,11 +239,9 @@ struct WebcamSnapshotView: View {
                                 .foregroundStyle(.white.opacity(0.6))
                         }
                         #if os(iOS)
-                        if scale > 1 {
-                            Text("Double-tap to reset")
-                                .font(.system(size: 8))
-                                .foregroundStyle(.white.opacity(0.4))
-                        }
+                        Text(scale > 1 ? "Double-tap to reset · Tap to close" : "Tap to close")
+                            .font(.system(size: 8))
+                            .foregroundStyle(.white.opacity(0.4))
                         #endif
                     }
                     .padding(.horizontal, 8)
