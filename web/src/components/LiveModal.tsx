@@ -49,6 +49,7 @@ async function resolveStreamURL(pageURL: string): Promise<string | null> {
 
 export function LiveModal({ cam, onClose }: Props) {
   const [state, setState] = useState<State>({ status: 'resolving' })
+  const [needsTap, setNeedsTap] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const hlsRef = useRef<any>(null)
@@ -92,7 +93,7 @@ export function LiveModal({ cam, onClose }: Props) {
     // Safari supports HLS natively — no hls.js needed
     if (video.canPlayType('application/vnd.apple.mpegurl')) {
       video.src = src
-      void video.play()
+      video.play().catch(() => setNeedsTap(true))
       return
     }
 
@@ -152,14 +153,29 @@ export function LiveModal({ cam, onClose }: Props) {
         )}
 
         {state.status === 'playing' && (
-          <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            muted
-            controls
-            className="w-full h-full object-contain"
-          />
+          <div className="relative w-full h-full flex items-center justify-center">
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              controls
+              className="w-full h-full object-contain"
+            />
+            {needsTap && (
+              <button
+                className="absolute inset-0 flex items-center justify-center"
+                onClick={() => { videoRef.current?.play().catch(() => {}); setNeedsTap(false) }}
+              >
+                <div className="flex flex-col items-center gap-2">
+                  <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                    <span className="text-white text-3xl pl-1">▶</span>
+                  </div>
+                  <span className="text-white/70 text-sm">Tap to play</span>
+                </div>
+              </button>
+            )}
+          </div>
         )}
 
         {state.status === 'snapshot' && (
