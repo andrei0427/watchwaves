@@ -1,7 +1,9 @@
 import SwiftUI
 import AVKit
 import AVFoundation
+#if os(watchOS)
 import WatchKit
+#endif
 
 // MARK: - Section model
 
@@ -102,6 +104,13 @@ struct WebcamSnapshotView: View {
     @State private var lastFetched: Date?
     // Loading state
     @State private var resolving = false
+    // Zoom state (snapshot only, iOS)
+    #if os(iOS)
+    @State private var scale: CGFloat = 1.0
+    @State private var lastScale: CGFloat = 1.0
+    @State private var offset: CGSize = .zero
+    @State private var lastOffset: CGSize = .zero
+    #endif
 
     var body: some View {
         ZStack {
@@ -110,13 +119,27 @@ struct WebcamSnapshotView: View {
             if let player {
                 VideoPlayer(player: player)
                     .ignoresSafeArea()
-                    .disabled(true)          // prevent tap-to-pause interfering
+                    .disabled(true)
+                    #if os(iOS)
+                    .scaleEffect(scale)
+                    .offset(offset)
+                    #endif
             } else if let image {
+                #if os(iOS)
+                image
+                    .resizable()
+                    .scaledToFill()
+                    .scaleEffect(scale)
+                    .offset(offset)
+                    .clipped()
+                    .ignoresSafeArea()
+                #else
                 image
                     .resizable()
                     .scaledToFill()
                     .clipped()
                     .ignoresSafeArea()
+                #endif
             } else {
                 VStack(spacing: 6) {
                     if resolving {
@@ -133,10 +156,58 @@ struct WebcamSnapshotView: View {
                 }
             }
 
+            // Gesture overlay — sits above content, below UI labels
+            #if os(iOS)
+            Color.clear
+                .contentShape(Rectangle())
+                .ignoresSafeArea()
+                .gesture(
+                    MagnificationGesture()
+                        .onChanged { value in
+                            let newScale = max(1, lastScale * value)
+                            scale = newScale
+                            // As we zoom out, pull offset proportionally toward center
+                            if lastScale > 1 {
+                                let progress = (newScale - 1) / (lastScale - 1)
+                                offset = CGSize(
+                                    width: lastOffset.width * progress,
+                                    height: lastOffset.height * progress
+                                )
+                            }
+                        }
+                        .onEnded { _ in
+                            lastScale = scale
+                            lastOffset = offset
+                            if scale <= 1 {
+                                scale = 1; lastScale = 1
+                                offset = .zero; lastOffset = .zero
+                            }
+                        }
+                        .simultaneously(with:
+                            DragGesture()
+                                .onChanged { value in
+                                    guard scale > 1 else { return }
+                                    offset = CGSize(
+                                        width: lastOffset.width + value.translation.width,
+                                        height: lastOffset.height + value.translation.height
+                                    )
+                                }
+                                .onEnded { _ in lastOffset = offset }
+                        )
+                )
+                .onTapGesture(count: 2) {
+                    withAnimation(.spring(duration: 0.3)) {
+                        scale = 1; lastScale = 1
+                        offset = .zero; lastOffset = .zero
+                    }
+                }
+                .onTapGesture { dismiss() }
+            #endif
+
             // Overlays
             VStack {
-                if player != nil {
-                    HStack {
+                HStack {
+                    if player != nil {
                         HStack(spacing: 3) {
                             Circle()
                                 .fill(.red)
@@ -148,13 +219,14 @@ struct WebcamSnapshotView: View {
                         .padding(.horizontal, 6)
                         .padding(.vertical, 3)
                         .background(.black.opacity(0.55), in: Capsule())
-                        .padding(.top, 6)
-                        .padding(.leading, 6)
-                        Spacer()
                     }
+                    Spacer()
                 }
+                .padding(.top, 6)
+                .padding(.horizontal, 6)
+
                 Spacer()
-                // Name label — shown over snapshot only (VideoPlayer has its own chrome)
+                // Name label — shown over snapshot only
                 if player == nil {
                     VStack(spacing: 2) {
                         Text(entry.name)
@@ -166,6 +238,11 @@ struct WebcamSnapshotView: View {
                                 .font(.system(size: 9))
                                 .foregroundStyle(.white.opacity(0.6))
                         }
+                        #if os(iOS)
+                        Text(scale > 1 ? "Double-tap to reset · Tap to close" : "Tap to close")
+                            .font(.system(size: 8))
+                            .foregroundStyle(.white.opacity(0.4))
+                        #endif
                     }
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
@@ -175,7 +252,6 @@ struct WebcamSnapshotView: View {
             }
         }
         .navigationBarHidden(true)
-        .onTapGesture { dismiss() }
         .task { await start() }
         .onDisappear { player?.pause() }
     }

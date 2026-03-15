@@ -44,6 +44,42 @@
 		AA0050000000000000000001 /* WaveMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0050000000000000000001 /* WaveMapView.swift */; };
 		AA0051000000000000000001 /* WebcamEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0051000000000000000001 /* WebcamEntry.swift */; };
 		AA0052000000000000000001 /* WebcamListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0052000000000000000001 /* WebcamListView.swift */; };
+		AA0070000000000000000001 /* MarineData.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0002000000000000000001 /* MarineData.swift */; };
+		AA0071000000000000000001 /* WaveCondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0003000000000000000001 /* WaveCondition.swift */; };
+		AA0072000000000000000001 /* CoastProbeResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0004000000000000000001 /* CoastProbeResult.swift */; };
+		AA0073000000000000000001 /* UserPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0005000000000000000001 /* UserPreferences.swift */; };
+		AA0074000000000000000001 /* MarineAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0006000000000000000001 /* MarineAPIClient.swift */; };
+		AA0075000000000000000001 /* CoastDetectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0007000000000000000001 /* CoastDetectionService.swift */; };
+		AA0076000000000000000001 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0008000000000000000001 /* LocationService.swift */; };
+		AA0077000000000000000001 /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0009000000000000000001 /* DataStore.swift */; };
+		AA0078000000000000000001 /* GeoHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0011000000000000000001 /* GeoHelpers.swift */; };
+		AA0079000000000000000001 /* CompassDirection.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0012000000000000000001 /* CompassDirection.swift */; };
+		AA007A000000000000000001 /* WaveFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0013000000000000000001 /* WaveFormatter.swift */; };
+		AA007B000000000000000001 /* WebcamEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0051000000000000000001 /* WebcamEntry.swift */; };
+		AA007C000000000000000001 /* WaveViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB000B000000000000000001 /* WaveViewModel.swift */; };
+		AA007D000000000000000001 /* DirectionIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0010000000000000000001 /* DirectionIndicatorView.swift */; };
+		AA007E000000000000000001 /* WaveMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0050000000000000000001 /* WaveMapView.swift */; };
+		AA007F000000000000000001 /* WebcamListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0052000000000000000001 /* WebcamListView.swift */; };
+		AA0085000000000000000001 /* ForecastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB000E000000000000000001 /* ForecastView.swift */; };
+		AA0086000000000000000001 /* CurrentConditionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB000D000000000000000001 /* CurrentConditionsView.swift */; };
+		AA0080000000000000000001 /* WavesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0060000000000000000001 /* WavesApp.swift */; };
+		AA0081000000000000000001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0061000000000000000001 /* ContentView.swift */; };
+		AA0082000000000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BB0062000000000000000001 /* Assets.xcassets */; };
+		AA00B0000000000000000001 /* WavesWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0070000000000000000001 /* WavesWidgetBundle.swift */; };
+		AA00B1000000000000000001 /* HomeScreenWaveWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0071000000000000000001 /* HomeScreenWaveWidgetView.swift */; };
+		AA00B2000000000000000001 /* WaveTimelineProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0021000000000000000001 /* WaveTimelineProvider.swift */; };
+		AA00B3000000000000000001 /* WaveTimelineEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0022000000000000000001 /* WaveTimelineEntry.swift */; };
+		AA00B4000000000000000001 /* CircularComplicationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0024000000000000000001 /* CircularComplicationView.swift */; };
+		AA00B5000000000000000001 /* RectangularComplicationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0025000000000000000001 /* RectangularComplicationView.swift */; };
+		AA00B6000000000000000001 /* InlineComplicationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0026000000000000000001 /* InlineComplicationView.swift */; };
+		AA00B7000000000000000001 /* CompassDirection.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0012000000000000000001 /* CompassDirection.swift */; };
+		AA00B8000000000000000001 /* WaveFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0013000000000000000001 /* WaveFormatter.swift */; };
+		AA00B9000000000000000001 /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0009000000000000000001 /* DataStore.swift */; };
+		AA00BA000000000000000001 /* WaveCondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0003000000000000000001 /* WaveCondition.swift */; };
+		AA00BB000000000000000001 /* CoastProbeResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0004000000000000000001 /* CoastProbeResult.swift */; };
+		AA00BC000000000000000001 /* UserPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0005000000000000000001 /* UserPreferences.swift */; };
+		AA00BD000000000000000001 /* MarineData.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0002000000000000000001 /* MarineData.swift */; };
+		AA00BE000000000000000001 /* WatchWavesIOSWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = CC0020000000000000000001 /* WatchWavesIOSWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +89,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = FF0002000000000000000001;
 			remoteInfo = WatchWavesWidgets;
+		};
+		DD0014000000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EE0001000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FF0020000000000000000001;
+			remoteInfo = WatchWavesIOSWidgets;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -64,6 +107,17 @@
 			dstSubfolderSpec = 13;
 			files = (
 				AA0040000000000000000001 /* WatchWavesWidgets.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DD0013000000000000000001 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				AA00BE000000000000000001 /* WatchWavesIOSWidgets.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -104,8 +158,17 @@
 		BB0050000000000000000001 /* WaveMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveMapView.swift; sourceTree = "<group>"; };
 		BB0051000000000000000001 /* WebcamEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebcamEntry.swift; sourceTree = "<group>"; };
 		BB0052000000000000000001 /* WebcamListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebcamListView.swift; sourceTree = "<group>"; };
+		BB0060000000000000000001 /* WavesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WavesApp.swift; sourceTree = "<group>"; };
+		BB0061000000000000000001 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		BB0062000000000000000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BB0063000000000000000001 /* WatchWavesIOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WatchWavesIOS.entitlements; sourceTree = "<group>"; };
 		CC0001000000000000000001 /* WatchWaves Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WatchWaves Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC0002000000000000000001 /* WatchWavesWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WatchWavesWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		CC0010000000000000000001 /* WatchWaves iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WatchWaves iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CC0020000000000000000001 /* WatchWavesIOSWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WatchWavesIOSWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB0070000000000000000001 /* WavesWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WavesWidgetBundle.swift; sourceTree = "<group>"; };
+		BB0071000000000000000001 /* HomeScreenWaveWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreenWaveWidgetView.swift; sourceTree = "<group>"; };
+		BB0072000000000000000001 /* WatchWavesIOSWidgets.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WatchWavesIOSWidgets.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -123,6 +186,20 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		DD0011000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DD0021000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -131,6 +208,8 @@
 			children = (
 				GG0002000000000000000001 /* WatchWaves Watch App */,
 				GG0007000000000000000001 /* WatchWavesWidgets */,
+				GG0010000000000000000001 /* WatchWaves iOS */,
+				GG0020000000000000000001 /* WatchWaves iOS Widget */,
 				GG0009000000000000000001 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -227,8 +306,31 @@
 			children = (
 				CC0001000000000000000001 /* WatchWaves Watch App.app */,
 				CC0002000000000000000001 /* WatchWavesWidgets.appex */,
+				CC0010000000000000000001 /* WatchWaves iOS.app */,
+				CC0020000000000000000001 /* WatchWavesIOSWidgets.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		GG0020000000000000000001 /* WatchWaves iOS Widget */ = {
+			isa = PBXGroup;
+			children = (
+				BB0070000000000000000001 /* WavesWidgetBundle.swift */,
+				BB0071000000000000000001 /* HomeScreenWaveWidgetView.swift */,
+				BB0072000000000000000001 /* WatchWavesIOSWidgets.entitlements */,
+			);
+			path = "WatchWaves iOS Widget";
+			sourceTree = "<group>";
+		};
+		GG0010000000000000000001 /* WatchWaves iOS */ = {
+			isa = PBXGroup;
+			children = (
+				BB0060000000000000000001 /* WavesApp.swift */,
+				BB0061000000000000000001 /* ContentView.swift */,
+				BB0062000000000000000001 /* Assets.xcassets */,
+				BB0063000000000000000001 /* WatchWavesIOS.entitlements */,
+			);
+			path = "WatchWaves iOS";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -269,6 +371,42 @@
 			productReference = CC0002000000000000000001 /* WatchWavesWidgets.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		FF0010000000000000000001 /* WatchWaves iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FF0011000000000000000001 /* Build configuration list for PBXNativeTarget "WatchWaves iOS" */;
+			buildPhases = (
+				DD0010000000000000000001 /* Sources */,
+				DD0011000000000000000001 /* Frameworks */,
+				DD0012000000000000000001 /* Resources */,
+				DD0013000000000000000001 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DD0015000000000000000001 /* PBXTargetDependency */,
+			);
+			name = "WatchWaves iOS";
+			productName = "WatchWaves iOS";
+			productReference = CC0010000000000000000001 /* WatchWaves iOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+		FF0020000000000000000001 /* WatchWavesIOSWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FF0021000000000000000001 /* Build configuration list for PBXNativeTarget "WatchWavesIOSWidgets" */;
+			buildPhases = (
+				DD0020000000000000000001 /* Sources */,
+				DD0021000000000000000001 /* Frameworks */,
+				DD0022000000000000000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WatchWavesIOSWidgets;
+			productName = WatchWavesIOSWidgets;
+			productReference = CC0020000000000000000001 /* WatchWavesIOSWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -284,6 +422,14 @@
 					};
 					FF0002000000000000000001 = {
 						CreatedOnToolsVersion = 15.0;
+					};
+					FF0010000000000000000001 = {
+						CreatedOnToolsVersion = 15.0;
+						ProvisioningStyle = Automatic;
+					};
+					FF0020000000000000000001 = {
+						CreatedOnToolsVersion = 15.0;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -302,6 +448,8 @@
 			targets = (
 				FF0001000000000000000001 /* WatchWaves Watch App */,
 				FF0002000000000000000001 /* WatchWavesWidgets */,
+				FF0010000000000000000001 /* WatchWaves iOS */,
+				FF0020000000000000000001 /* WatchWavesIOSWidgets */,
 			);
 		};
 /* End PBXProject section */
@@ -312,6 +460,21 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA0014000000000000000001 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DD0012000000000000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA0082000000000000000001 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DD0022000000000000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -367,6 +530,54 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		DD0010000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA0080000000000000000001 /* WavesApp.swift in Sources */,
+				AA0081000000000000000001 /* ContentView.swift in Sources */,
+				AA0070000000000000000001 /* MarineData.swift in Sources */,
+				AA0071000000000000000001 /* WaveCondition.swift in Sources */,
+				AA0072000000000000000001 /* CoastProbeResult.swift in Sources */,
+				AA0073000000000000000001 /* UserPreferences.swift in Sources */,
+				AA0074000000000000000001 /* MarineAPIClient.swift in Sources */,
+				AA0075000000000000000001 /* CoastDetectionService.swift in Sources */,
+				AA0076000000000000000001 /* LocationService.swift in Sources */,
+				AA0077000000000000000001 /* DataStore.swift in Sources */,
+				AA0078000000000000000001 /* GeoHelpers.swift in Sources */,
+				AA0079000000000000000001 /* CompassDirection.swift in Sources */,
+				AA007A000000000000000001 /* WaveFormatter.swift in Sources */,
+				AA007B000000000000000001 /* WebcamEntry.swift in Sources */,
+				AA007C000000000000000001 /* WaveViewModel.swift in Sources */,
+				AA007D000000000000000001 /* DirectionIndicatorView.swift in Sources */,
+				AA007E000000000000000001 /* WaveMapView.swift in Sources */,
+				AA007F000000000000000001 /* WebcamListView.swift in Sources */,
+				AA0085000000000000000001 /* ForecastView.swift in Sources */,
+				AA0086000000000000000001 /* CurrentConditionsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DD0020000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA00B0000000000000000001 /* WavesWidgetBundle.swift in Sources */,
+				AA00B1000000000000000001 /* HomeScreenWaveWidgetView.swift in Sources */,
+				AA00B2000000000000000001 /* WaveTimelineProvider.swift in Sources */,
+				AA00B3000000000000000001 /* WaveTimelineEntry.swift in Sources */,
+				AA00B4000000000000000001 /* CircularComplicationView.swift in Sources */,
+				AA00B5000000000000000001 /* RectangularComplicationView.swift in Sources */,
+				AA00B6000000000000000001 /* InlineComplicationView.swift in Sources */,
+				AA00B7000000000000000001 /* CompassDirection.swift in Sources */,
+				AA00B8000000000000000001 /* WaveFormatter.swift in Sources */,
+				AA00B9000000000000000001 /* DataStore.swift in Sources */,
+				AA00BA000000000000000001 /* WaveCondition.swift in Sources */,
+				AA00BB000000000000000001 /* CoastProbeResult.swift in Sources */,
+				AA00BC000000000000000001 /* UserPreferences.swift in Sources */,
+				AA00BD000000000000000001 /* MarineData.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -374,6 +585,11 @@
 			isa = PBXTargetDependency;
 			target = FF0002000000000000000001 /* WatchWavesWidgets */;
 			targetProxy = DD0001000000000000000001 /* PBXContainerItemProxy */;
+		};
+		DD0015000000000000000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FF0020000000000000000001 /* WatchWavesIOSWidgets */;
+			targetProxy = DD0014000000000000000001 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -609,6 +825,130 @@
 			};
 			name = Release;
 		};
+		HH0010000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "WatchWaves iOS/WatchWavesIOS.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8UT84YMZ4U;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = WatchWaves;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "WatchWaves needs your location to detect your nearest coast and fetch local wave conditions.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.watchWaves.iosapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		HH0011000000000000000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "WatchWaves iOS/WatchWavesIOS.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8UT84YMZ4U;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = WatchWaves;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "WatchWaves needs your location to detect your nearest coast and fetch local wave conditions.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.watchWaves.iosapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		HH0020000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "WatchWaves iOS Widget/WatchWavesIOSWidgets.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8UT84YMZ4U;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "WatchWaves iOS Widget/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.watchWaves.iosapp.ioswidgets;
+				PRODUCT_NAME = WatchWavesIOSWidgets;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		HH0021000000000000000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "WatchWaves iOS Widget/WatchWavesIOSWidgets.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8UT84YMZ4U;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "WatchWaves iOS Widget/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.watchWaves.iosapp.ioswidgets;
+				PRODUCT_NAME = WatchWavesIOSWidgets;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -635,6 +975,24 @@
 			buildConfigurations = (
 				HH0001000000000000000001 /* Debug */,
 				HH0002000000000000000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FF0011000000000000000001 /* Build configuration list for PBXNativeTarget "WatchWaves iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				HH0010000000000000000001 /* Debug */,
+				HH0011000000000000000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FF0021000000000000000001 /* Build configuration list for PBXNativeTarget "WatchWavesIOSWidgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				HH0020000000000000000001 /* Debug */,
+				HH0021000000000000000001 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
