@@ -1,0 +1,71 @@
+name: Deploy Web App
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'web/**'
+  schedule:
+    # Refresh webcam snapshots every 10 minutes
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch webcam snapshots
+        # curl with a spoofed Referer bypasses Skyline's hotlink protection.
+        # Images land in web/public/snapshots/ so Vite bundles them into dist/
+        # and they're served same-origin — no CORS issues in the browser.
+        run: |
+          mkdir -p web/public/snapshots
+          for id in 207 4000 257 213 261 214 5223 786 755 754 626 356 4455 3372 5304 254 221 864; do
+            curl -sf -L \
+              -H "Referer: https://www.skylinewebcams.com/" \
+              -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" \
+              --max-time 10 \
+              "https://cdn.skylinewebcams.com/live${id}.jpg" \
+              -o "web/public/snapshots/live${id}.jpg" \
+              || echo "⚠ cam ${id} unavailable"
+          done
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: web
+
+      - name: Build
+        run: npm run build
+        working-directory: web
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
