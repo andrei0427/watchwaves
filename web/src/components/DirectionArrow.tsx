@@ -10,7 +10,7 @@ export function DirectionArrow({ degrees, size = 20, color = 'white' }: Props) {
       width={size}
       height={size}
       viewBox="0 0 24 24"
-      style={{ transform: `rotate(${degrees}deg)`, display: 'inline-block', flexShrink: 0 }}
+      style={{ transform: `rotate(${degrees + 180}deg)`, display: 'inline-block', flexShrink: 0 }}
       aria-hidden="true"
     >
       <path
