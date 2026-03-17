@@ -27,12 +27,14 @@ private struct WebcamSection: Identifiable {
 
 private struct WebcamSectionRows: View {
     let section: WebcamSection
+    let condition: WaveCondition?
+    let useMetric: Bool
 
     var body: some View {
         Section {
             ForEach(section.cameras) { entry in
                 NavigationLink {
-                    WebcamSnapshotView(entry: entry)
+                    WebcamSnapshotView(entry: entry, condition: condition, useMetric: useMetric)
                 } label: {
                     Text(entry.name)
                         .font(.system(size: 14, weight: .medium))
@@ -50,6 +52,8 @@ private struct WebcamSectionRows: View {
 // MARK: - List View
 
 struct WebcamListView: View {
+    let condition: WaveCondition?
+    let useMetric: Bool
     private let sections = WebcamSection.build()
 
     var body: some View {
@@ -65,7 +69,7 @@ struct WebcamListView: View {
     private var cameraList: some View {
         List {
             ForEach(sections) { section in
-                WebcamSectionRows(section: section)
+                WebcamSectionRows(section: section, condition: condition, useMetric: useMetric)
             }
         }
     }
@@ -95,6 +99,8 @@ struct WebcamListView: View {
 
 struct WebcamSnapshotView: View {
     let entry: WebcamEntry
+    let condition: WaveCondition?
+    let useMetric: Bool
     @Environment(\.dismiss) private var dismiss
 
     // Live stream
@@ -207,6 +213,17 @@ struct WebcamSnapshotView: View {
             // Overlays
             VStack {
                 HStack {
+                    #if os(watchOS)
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .frame(width: 32, height: 32)
+                            .background(.ultraThinMaterial, in: Circle())
+                    }
+                    .buttonStyle(.plain)
+                    #endif
+                    Spacer()
                     if player != nil {
                         HStack(spacing: 3) {
                             Circle()
@@ -220,7 +237,6 @@ struct WebcamSnapshotView: View {
                         .padding(.vertical, 3)
                         .background(.black.opacity(0.55), in: Capsule())
                     }
-                    Spacer()
                 }
                 .padding(.top, 6)
                 .padding(.horizontal, 6)
@@ -249,6 +265,25 @@ struct WebcamSnapshotView: View {
                     .background(.black.opacity(0.55), in: Capsule())
                     .padding(.bottom, 6)
                 }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            // Compass overlay (bottom-right)
+            if let cond = condition {
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        WebcamCompassView(
+                            facingBearing: entry.facingBearing,
+                            waveDirection: cond.waveDirection,
+                            windDirection: cond.windDirection,
+                            waveHeight: cond.waveHeight,
+                            useMetric: useMetric
+                        )
+                        .padding(6)
+                    }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
         .navigationBarHidden(true)
@@ -315,6 +350,8 @@ struct WebcamSnapshotView: View {
         }
     }
 
+    // MARK: - Snapshot
+
     private func loadSnapshot() async {
         let urlString = entry.snapshotURL.absoluteString + "?t=\(Int(Date().timeIntervalSince1970))"
         guard let url = URL(string: urlString) else { return }
@@ -324,5 +361,88 @@ struct WebcamSnapshotView: View {
               let uiImage = UIImage(data: data) else { return }
         image = Image(uiImage: uiImage)
         lastFetched = Date()
+    }
+}
+
+// MARK: - Webcam Compass Overlay
+
+private struct WebcamCompassView: View {
+    let facingBearing: Double  // direction camera faces out to sea (degrees, 0=N)
+    let waveDirection: Double  // wave travel direction (absolute bearing)
+    let windDirection: Double?
+    let waveHeight: Double
+    let useMetric: Bool
+
+    private static let size: CGFloat = 64
+    private static let ringR: CGFloat = size / 2 - 9
+
+    /// Angle from "sea / top of compass" to the given absolute bearing.
+    private func relAngle(_ abs: Double) -> Double {
+        var a = (abs - facingBearing).truncatingRemainder(dividingBy: 360)
+        if a < 0 { a += 360 }
+        return a
+    }
+
+    private var waveRel: Double { relAngle(waveDirection) }
+
+    /// Wind angle relative to camera facing, nudged away from wave if too close.
+    private var nudgedWindRel: Double? {
+        guard let wd = windDirection else { return nil }
+        let wr = relAngle(wd)
+        var diff = wr - waveRel
+        diff = diff.truncatingRemainder(dividingBy: 360)
+        if diff > 180 { diff -= 360 }
+        if diff < -180 { diff += 360 }
+        if abs(diff) < 10 { return wr + (diff >= 0 ? 10 : -10) }
+        return wr
+    }
+
+    var body: some View {
+        let s = Self.size / 64.0
+        let ringR = Self.ringR
+        let wRad = waveRel * .pi / 180
+
+        ZStack {
+            Circle().fill(.black.opacity(0.65))
+
+            Circle()
+                .stroke(.white.opacity(0.22), lineWidth: 1.5 * s)
+                .padding(8 * s)
+
+            // "sea" label fixed at top, shore dot fixed at bottom
+            VStack {
+                Text("sea")
+                    .font(.system(size: 6.5 * s, weight: .semibold))
+                    .foregroundStyle(.cyan.opacity(0.55))
+                Spacer()
+                Circle()
+                    .fill(.orange.opacity(0.75))
+                    .frame(width: 4 * s, height: 4 * s)
+            }
+            .padding(.vertical, 4 * s)
+
+            // Wave indicator — tip points in wave travel direction
+            WaveCurlIndicator()
+                .fill(.cyan)
+                .frame(width: 11 * s, height: 9 * s)
+                .rotationEffect(.degrees(waveRel))
+                .offset(x: sin(wRad) * ringR, y: -cos(wRad) * ringR)
+
+            // Wind indicator
+            if let wr = nudgedWindRel {
+                let windRad = wr * .pi / 180
+                WindStreakIndicator()
+                    .fill(.white.opacity(0.8))
+                    .frame(width: 9 * s, height: 8 * s)
+                    .rotationEffect(.degrees(wr))
+                    .offset(x: sin(windRad) * ringR, y: -cos(windRad) * ringR)
+            }
+
+            // Wave height in center
+            Text(WaveFormatter.heightString(waveHeight, useMetric: useMetric))
+                .font(.system(size: 9 * s, weight: .bold, design: .rounded))
+                .foregroundStyle(.white)
+        }
+        .frame(width: Self.size, height: Self.size)
     }
 }

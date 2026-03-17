@@ -5,6 +5,7 @@ struct WaveMapView: View {
     let detection: CoastDetectionResult
     let condition: WaveCondition?
     let selectedCoast: CoastProbeResult?
+    var useMetric: Bool = true
 
     private let coastByDirection: [CompassDirection: CoastProbeResult]
     private let maxRadiusKm: Double
@@ -17,10 +18,11 @@ struct WaveMapView: View {
     #endif
     @State private var selectedPin: WebcamPin?
 
-    init(detection: CoastDetectionResult, condition: WaveCondition?, selectedCoast: CoastProbeResult?) {
+    init(detection: CoastDetectionResult, condition: WaveCondition?, selectedCoast: CoastProbeResult?, useMetric: Bool = true) {
         self.detection = detection
         self.condition = condition
         self.selectedCoast = selectedCoast
+        self.useMetric = useMetric
 
         var lookup: [CompassDirection: CoastProbeResult] = [:]
         for c in detection.detectedCoasts { lookup[c.direction] = c }
@@ -123,7 +125,7 @@ struct WaveMapView: View {
             }
         }
         .sheet(item: $selectedPin) { pin in
-            WebcamPinSheet(pin: pin)
+            WebcamPinSheet(pin: pin, condition: condition, useMetric: useMetric)
         }
     }
 
@@ -500,15 +502,17 @@ private struct WebcamPinMarker: View {
 
 private struct WebcamPinSheet: View {
     let pin: WebcamPin
+    let condition: WaveCondition?
+    let useMetric: Bool
 
     var body: some View {
         NavigationStack {
             if pin.cameras.count == 1, let entry = pin.cameras.first {
-                WebcamSnapshotView(entry: entry)
+                WebcamSnapshotView(entry: entry, condition: condition, useMetric: useMetric)
             } else {
                 List(pin.cameras) { entry in
                     NavigationLink(entry.name) {
-                        WebcamSnapshotView(entry: entry)
+                        WebcamSnapshotView(entry: entry, condition: condition, useMetric: useMetric)
                     }
                     .font(.system(size: 14, weight: .medium))
                 }
