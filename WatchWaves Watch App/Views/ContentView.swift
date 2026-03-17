@@ -3,6 +3,9 @@ import SwiftUI
 struct ContentView: View {
     @State private var viewModel = WaveViewModel()
     @State private var showForecast = false
+    @State private var showMap = false
+    @State private var mapVisible = false  // deferred — lets sheet appear before constructing the heavy map
+    @State private var mapLoaded = false
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
@@ -12,10 +15,11 @@ struct ContentView: View {
                     .tag(0)
                 compassTab
                     .tag(1)
-                mapTab
-                    .tag(2)
-                WebcamListView()
-                    .tag(3)
+                WebcamListView(
+                    condition: viewModel.currentCondition,
+                    useMetric: viewModel.preferences.useMetricUnits
+                )
+                .tag(2)
             }
             .tabViewStyle(.verticalPage)
         }
@@ -92,7 +96,7 @@ struct ContentView: View {
         }
     }
 
-    // MARK: - Tab 2: Compass
+    // MARK: - Tab 2: Compass → map sheet on tap
 
     @ViewBuilder
     private var compassTab: some View {
@@ -107,8 +111,11 @@ struct ContentView: View {
                 beachName: viewModel.nearestBeachName,
                 coastBearing: viewModel.coastBearing,
                 coastDistanceKm: viewModel.coastDistanceKm,
-                onTap: {}
+                onTap: { showMap = true }
             )
+            .sheet(isPresented: $showMap) {
+                mapSheet
+            }
         } else if viewModel.isLoading {
             VStack(spacing: 8) {
                 ProgressView()
@@ -123,28 +130,47 @@ struct ContentView: View {
         }
     }
 
-    // MARK: - Tab 3: Map (persistent — pre-warms tiles, no sheet delay)
+    // MARK: - Map Sheet (shown when compass is tapped)
 
     @ViewBuilder
-    private var mapTab: some View {
-        if let detection = viewModel.coastDetection,
-           let condition = viewModel.currentCondition {
-            WaveMapView(
-                detection: detection,
-                condition: condition,
-                selectedCoast: viewModel.selectedCoast
-            )
-        } else if viewModel.isLoading {
-            VStack(spacing: 8) {
-                ProgressView()
-                Text("Detecting coast...")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+    private var mapSheet: some View {
+        ZStack {
+            // Only constructed after sheet has appeared, so the spinner shows first
+            if mapVisible,
+               let detection = viewModel.coastDetection,
+               let condition = viewModel.currentCondition {
+                WaveMapView(
+                    detection: detection,
+                    condition: condition,
+                    selectedCoast: viewModel.selectedCoast,
+                    useMetric: viewModel.preferences.useMetricUnits
+                )
+                .onAppear {
+                    withAnimation(.easeOut(duration: 0.3)) { mapLoaded = true }
+                }
             }
-        } else {
-            Image(systemName: "map")
-                .font(.title2)
-                .foregroundStyle(.secondary)
+
+            // Loading overlay — shown until map fires onAppear
+            if !mapLoaded {
+                ZStack {
+                    Color.black.ignoresSafeArea()
+                    VStack(spacing: 8) {
+                        ProgressView()
+                        Text("Loading map...")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .transition(.opacity)
+            }
+        }
+        .task {
+            // Short delay lets the sheet animate in with the spinner before MapKit initialises
+            try? await Task.sleep(for: .milliseconds(80))
+            mapVisible = true
+        }
+        .onChange(of: showMap) { _, shown in
+            if !shown { mapVisible = false; mapLoaded = false }
         }
     }
 }
